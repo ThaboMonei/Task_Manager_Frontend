@@ -49,14 +49,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.9"
-  empty_widget:
-    dependency: "direct main"
-    description:
-      name: empty_widget
-      sha256: aad8073e5fb43eadde7007db1e2fea7acd33d0d33cff031e31a6675ca0a3e7fb
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.0.5"
   fake_async:
     dependency: transitive
     description:
@@ -70,6 +62,14 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_empty_state:
+    dependency: "direct main"
+    description:
+      name: flutter_empty_state
+      sha256: "484a1ee84b316613364c065399c30dec85949b4bb32da95f2def0dfe8ccdd2ba"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.3.0"
   flutter_lints:
     dependency: "direct dev"
     description:

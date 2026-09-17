@@ -1,8 +1,9 @@
-import 'package:empty_widget/empty_widget.dart';
+import 'package:flutter_empty_state/flutter_empty_state.dart';
 import 'package:flutter/material.dart';
 
 
 class EmptyState extends StatelessWidget {
+  const EmptyState({super.key});
   @override
   Widget build(BuildContext context) {
     return
