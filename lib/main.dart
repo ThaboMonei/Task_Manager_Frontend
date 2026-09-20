@@ -2,11 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_empty_state/flutter_empty_state.dart';
 import 'repositories/task_repository.dart';
 import 'models/task.dart';
+import 'services/task_api_service.dart';
 
-void main() {
-  runApp(const MyApp());
+void main()  async {
+  print('hello');
+  final api = ApiService();
+  final tasks = await api.fetchTasks();
+  print(tasks);
 }
-
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 

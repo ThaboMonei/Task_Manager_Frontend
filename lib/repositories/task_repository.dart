@@ -11,7 +11,7 @@ class TaskRepository{
     );
 
     try{
-      final createdTask = await _apiService.addTask(newTask);
+      final createdTask = await _apiService.createTask(newTask);
       return createdTask;
     }catch(e){
       print('API failed');

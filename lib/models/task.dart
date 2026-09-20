@@ -1,6 +1,6 @@
 class Task{
   final int? id;
-  final String title;
+  final String? title;
   final String? description;
   final bool isComplete;
   final DateTime? dueDate;
@@ -19,10 +19,10 @@ class Task{
     factory Task.fromJson(Map<String,dynamic> json){
       return Task(
         id: json['id'],
-        title: json['title'],
-        dueDate: json['dueDate'],
+        title: json['title'] as String? ?? '',
+        dueDate: json['dueDate'] !=  null ? DateTime.parse(json['dueDate'] as String) : null,
         description: json['description'],
-        createdAt: json['createdAt'],
+        createdAt: json['createdAt'] != null ? DateTime.parse(json['createAt'] as String): null,
         isComplete: json['isComplete'] ?? false
       );
     }
@@ -32,9 +32,9 @@ class Task{
         if(id != null)
         'id': id,
         'title': title,
-        'dueDate': dueDate,
+        if(dueDate != null)'dueDate': dueDate!.toIso8601String(),
         'description': description,
-        'createdAt': createdAt,
+        if(createdAt != null)'createdAt': createdAt!.toIso8601String(),
         'isComplete': isComplete,
       };
     }
