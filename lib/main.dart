@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_empty_state/flutter_empty_state.dart';
+import 'repositories/task_repository.dart';
+import 'models/task.dart';
 
 void main() {
   runApp(const MyApp());
@@ -12,7 +14,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Task app',
       theme: ThemeData(
         colorScheme: .fromSeed(seedColor: Colors.green),
       ),
@@ -30,6 +32,23 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+final TaskRepository _repository = TaskRepository();
+final TextEditingController _controller = TextEditingController();
+
+@override
+void initState(){
+  super.initState();
+}
+
+//add function
+Future<void> _addTask() async {
+  if(_controller.text.trim().isEmpty) {
+    print("You did not imput text");
+  }
+  final task = _controller.text.trim();
+  _controller.clear();
+  await _repository.addTask(task);
+}
 
   @override
   Widget build(BuildContext context) {
@@ -45,6 +64,29 @@ class _HomePageState extends State<HomePage> {
           children: [
              const Text('''           Empty List
 No currently added tasks.'''
+),
+Padding(
+  padding: const EdgeInsets.all(16.0),
+  child: Row(
+    children: [
+      Expanded(
+        child:TextField(
+          controller: _controller,
+          decoration: const InputDecoration(
+            hintText: 'Add a new task...',
+            border: OutlineInputBorder(),
+          ),
+        ),
+      ),
+      const SizedBox(width: 8),
+      IconButton(
+        icon: const Icon(Icons.add),
+        onPressed: _addTask,
+        color: Colors.black,
+        iconSize: 40,
+      ),
+    ],
+  ),
 ),
             
              SizedBox(height: 20),
