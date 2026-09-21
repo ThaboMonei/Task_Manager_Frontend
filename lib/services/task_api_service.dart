@@ -30,4 +30,23 @@ Future<List<Task>> fetchTasks() async{
       throw Exception('Failed to load tasks');
     }
   }
+
+  //Update
+  Future<void> updateTask(Task task) async {
+    final response = await http.put(Uri.parse('$_baseUrl/tasks/${task.id}'),
+    headers: {'Content-Type': 'application/json'},
+    body: jsonEncode(task.toJson()),
+    );
+    if(response.statusCode != 204){
+      throw Exception('Failed to update task on API');
+    }
+  } 
+
+  //Delete
+  Future<void> deleteTask(int id) async{
+    final response = await http.delete(Uri.parse('$_baseUrl/tasks/$id'));
+    if(response.statusCode != 200){
+      throw Exception('Failed to delete task on API');
+    }
+  }
 }

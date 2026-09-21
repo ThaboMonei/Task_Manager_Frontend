@@ -4,11 +4,8 @@ import 'repositories/task_repository.dart';
 import 'models/task.dart';
 import 'services/task_api_service.dart';
 
-void main()  async {
-  print('hello');
-  final api = ApiService();
-  final tasks = await api.fetchTasks();
-  print(tasks);
+void main()  {
+  runApp(const MyApp());
 }
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
