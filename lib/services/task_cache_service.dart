@@ -18,9 +18,11 @@ class DataBaseService{
       await db.execute('''
     CREATE TABLE $_tableName(
     id INTEGER PRIMARY KEY,
-    task TEXT NOT NULL,
+    title TEXT NOT NULL,
     isComplete INTEGER NOT NULL,
-    priority INTEGER NOT NULL
+    dueDate TEXT,
+    priority INTEGER NOT NULL,
+    createdAt TEXT
     )
 ''');
     },
@@ -34,7 +36,7 @@ Future<List<Task>> getAllTasks() async{
     id: map['id'] as int?,
     title: map['title'] as String,
     dueDate: map['dueDate'] != null ? DateTime.parse(map['dueDate'] as String) : null,
-    description: map['description'],
+    // description: map['description'],
     createdAt: map['createdAt'] != null ? DateTime.parse(map['createdAt'] as String) : null,
     isComplete: map['isComplete'] == 1,
     priority: Priority.values[map['priority'] as int],
@@ -48,7 +50,7 @@ Future<void> insertTask(Task task) async{
     'id': task.id,
     'title': task.title,
     'dueDate': task.dueDate?.toIso8601String(),
-    'description': task.description,
+    // 'description': task.description,
     'isComplete': task.isComplete ? 1 : 0,
     'priority': task.priority.index,
     'createdAt': task.createdAt?.toIso8601String(),

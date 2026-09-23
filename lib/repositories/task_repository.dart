@@ -33,11 +33,11 @@ class TaskRepository{
       return createdTask;
     }catch(e){
       print('API failed, saving locally: $e');
-      // final localTask = Task(
-      //   id: DateTime.now().millisecondsSinceEpoch * -1,
-      //   title: title,
-      // );
-      // await _dbService.insertTask(localTask);
+      final localTask = Task(
+        id: DateTime.now().millisecondsSinceEpoch * -1,
+        title: title,
+      );
+      await _dbService.insertTask(localTask);
       return newTask;
     }
   }
@@ -47,7 +47,7 @@ class TaskRepository{
       id: task.id,
       title: task.title,
       dueDate: task.dueDate,
-      description: task.description,
+      // description: task.description,
       createdAt: task.createdAt,
       isComplete: task.isComplete,
     );
