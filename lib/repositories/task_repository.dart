@@ -22,13 +22,22 @@ class TaskRepository{
     }
   }
 
-  Future<Task> addTask(String title) async {
-    final newTask = Task(title: title);
+  Future<Task> addTask({
+    required String title,
+    DateTime? dueDate,
+    Priority priority = Priority.medium,
+    }) async {
+    final newTask = Task(title: title, dueDate: dueDate, priority: priority,);
     try{
       final createdTask = await _apiService.createTask(newTask);
       return createdTask;
     }catch(e){
-      print('API failed');
+      print('API failed, saving locally: $e');
+      // final localTask = Task(
+      //   id: DateTime.now().millisecondsSinceEpoch * -1,
+      //   title: title,
+      // );
+      // await _dbService.insertTask(localTask);
       return newTask;
     }
   }
@@ -50,7 +59,7 @@ class TaskRepository{
     await _dbService.updateTask(updatedTask);
   }
 
-  Future<void> deleteTodo(int id) async{
+  Future<void> deleteTask(int id) async{
     try{
       await _apiService.deleteTask(id);
     }catch(e){

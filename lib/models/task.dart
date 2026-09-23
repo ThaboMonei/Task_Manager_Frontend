@@ -1,10 +1,13 @@
+enum Priority{low, medium, high}
+
 class Task{
   final int? id;
-  final String? title;
+  final String title;
   final String? description;
   final bool isComplete;
   final DateTime? dueDate;
   final DateTime? createdAt;
+  final Priority priority;
 
   Task(
     {
@@ -13,17 +16,19 @@ class Task{
        this.dueDate,
       this.description,
        this.createdAt,
-      this.isComplete = false
+      this.isComplete = false,
+      this.priority = Priority.medium,
       });
 
     factory Task.fromJson(Map<String,dynamic> json){
       return Task(
         id: json['id'],
         title: json['title'] as String? ?? '',
-        dueDate: json['dueDate'] !=  null ? DateTime.parse(json['dueDate'] as String) : null,
+        dueDate: json['dueDate'] !=  null ? DateTime.tryParse(json['dueDate'] as String) : null,
         description: json['description'],
-        createdAt: json['createdAt'] != null ? DateTime.parse(json['createAt'] as String): null,
-        isComplete: json['isComplete'] ?? false
+        createdAt: json['createdAt'] != null ? DateTime.tryParse(json['createAt'] as String): null,
+        isComplete: json['isComplete'] ?? false,
+        priority: _parsePriority(json['priority'] as int?),
       );
     }
 
@@ -36,6 +41,16 @@ class Task{
         'description': description,
         if(createdAt != null)'createdAt': createdAt!.toIso8601String(),
         'isComplete': isComplete,
+        'priority': priority.index,
       };
     }
+}
+
+Priority _parsePriority(int? value){
+  switch(value){
+    case 0: return Priority.low;
+    case 1: return Priority.medium;
+    case 2:  return Priority.high;
+    default: return Priority.medium;
+  }
 }

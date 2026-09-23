@@ -13,13 +13,14 @@ class DataBaseService{
   }
 
   Future<Database> _initDatabase() async {
-    String path = join(await getDatabasesPath(), 'Task_app.db');
+    String path = join(await getDatabasesPath(), 'Task_app2.db');
     return await openDatabase(path, version: 1, onCreate: (db, version) async{
       await db.execute('''
     CREATE TABLE $_tableName(
     id INTEGER PRIMARY KEY,
     task TEXT NOT NULL,
-    isComplete INTEGER NOT NULL
+    isComplete INTEGER NOT NULL,
+    priority INTEGER NOT NULL
     )
 ''');
     },
@@ -30,12 +31,13 @@ Future<List<Task>> getAllTasks() async{
   final db = await database;
   final List<Map<String, dynamic>> maps = await db.query(_tableName);
   return maps.map((map) => Task(
-    id: map['id'],
-    title: map['title'],
-    dueDate: map['dueDate'],
+    id: map['id'] as int?,
+    title: map['title'] as String,
+    dueDate: map['dueDate'] != null ? DateTime.parse(map['dueDate'] as String) : null,
     description: map['description'],
-    createdAt: map['createdAt'],
-    isComplete: map['isComplete'],
+    createdAt: map['createdAt'] != null ? DateTime.parse(map['createdAt'] as String) : null,
+    isComplete: map['isComplete'] == 1,
+    priority: Priority.values[map['priority'] as int],
   )).toList();
 }
 
@@ -45,9 +47,11 @@ Future<void> insertTask(Task task) async{
   {
     'id': task.id,
     'title': task.title,
-    'dueDate': task.dueDate,
+    'dueDate': task.dueDate?.toIso8601String(),
     'description': task.description,
-    'isComplete': task.isComplete,
+    'isComplete': task.isComplete ? 1 : 0,
+    'priority': task.priority.index,
+    'createdAt': task.createdAt?.toIso8601String(),
   },
   conflictAlgorithm: ConflictAlgorithm.replace,
   );
@@ -55,7 +59,7 @@ Future<void> insertTask(Task task) async{
 
 Future<void> updateTask(Task task) async{
   final db = await database;
-  await db.update(_tableName,{'title': task.title, 'isComplete': task.isComplete ? 1 : 0},where: 'id = ?',whereArgs: [task.id],
+  await db.update(_tableName,{'title': task.title, 'isComplete': task.isComplete ? 1 : 0,'priority': task.priority.index},where: 'id = ?',whereArgs: [task.id],
   );
 }
 
