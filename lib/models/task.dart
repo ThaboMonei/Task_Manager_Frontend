@@ -27,7 +27,7 @@ class Task{
         title: json['title'] as String? ?? '',
         dueDate: json['dueDate'] !=  null ? DateTime.tryParse(json['dueDate'] as String) : null,
         // description: json['description'] as String? ?? 'null',
-        createdAt: json['createdAt'] != null ? DateTime.tryParse(json['createAt'] as String): null,
+        createdAt: json['createdAt'] != null ? DateTime.tryParse(json['createdAt'] as String): null,
         isCompleted: json['isCompleted'] ?? false,
         priority: _parsePriority(json['priority'] as int?),
       );
