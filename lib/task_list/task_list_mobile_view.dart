@@ -73,7 +73,15 @@ class _TaskListMobileViewState extends State<TaskListMobileView>{
           task: task,
           onToggle: () => _toggle(task),
           onDelete: () => _delete(task.id!),
-          onTap: () {},
+          onTap: () async{
+            final changed = await Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder:(_) => TaskDetailsMobileView(task: task),
+              ),
+            );
+             if(changed == true) _loadTasks();
+          },       
         );
       },
     ),

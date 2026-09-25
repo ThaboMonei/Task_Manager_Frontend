@@ -20,13 +20,13 @@ Widget build(BuildContext context){
   return ListTile(
     onTap: onTap, 
     leading: Checkbox(
-      value: task.isComplete,
+      value: task.isCompleted,
       onChanged: (_) => onToggle(),
     ),
     title: Text(
       task.title,
       style: TextStyle(
-        decoration: task.isComplete ? TextDecoration.lineThrough : null,
+        decoration: task.isCompleted ? TextDecoration.lineThrough : null,
       ),
     ),
     subtitle: task.dueDate != null ? Text('Due: ${task.dueDate!.toLocal().toString().split('')[0]}') 

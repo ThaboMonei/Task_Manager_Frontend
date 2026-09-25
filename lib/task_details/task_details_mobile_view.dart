@@ -5,7 +5,8 @@ import 'widgets/task_form.dart';
 
 
 class TaskDetailsMobileView extends StatefulWidget{
-  const TaskDetailsMobileView({super.key});
+  final Task? task;
+  const TaskDetailsMobileView({super.key,this.task});
 
   @override
   State<TaskDetailsMobileView> createState() => _TaskDetailsMobileViewState();
@@ -19,6 +20,16 @@ class _TaskDetailsMobileViewState extends State<TaskDetailsMobileView>{
   Priority _priority = Priority.medium;
   bool _isSaving = false;
 
+@override
+void initState(){
+  super.initState();
+  if(widget.task != null){
+    _titleController.text = widget.task!.title;
+    _dueDate = widget.task!.dueDate;
+    _priority = widget.task!.priority;
+  }
+}
+
   @override
   void dispose(){
     _titleController.dispose();
@@ -30,12 +41,23 @@ class _TaskDetailsMobileViewState extends State<TaskDetailsMobileView>{
     if(title.isEmpty || _isSaving) return ;
 
     setState(() => _isSaving = true);
-
+    if(widget.task == null){
     await _repository.addTask(
       title: title,
       dueDate: _dueDate,
       priority: _priority,
     );
+    }else{
+      final updated = Task(
+        id: widget.task!.id,
+        title: title,
+        isCompleted: widget.task!.isCompleted,
+        dueDate: _dueDate,
+        priority: _priority,
+        createdAt: widget.task!.createdAt,
+      );
+      await _repository.updateTask(updated);
+    }
 
     if(!mounted) return;
     Navigator.pop(context, true);
@@ -43,7 +65,7 @@ class _TaskDetailsMobileViewState extends State<TaskDetailsMobileView>{
     @override
     Widget build(BuildContext context){
       return Scaffold(
-        appBar: AppBar(title: const Text('New Task'), ),
+        appBar: AppBar(title: Text(widget.task == null ? 'New Task' : 'Edit Task'), ),
         body: TaskForm(
           titleController: _titleController,
           dueDate: _dueDate,

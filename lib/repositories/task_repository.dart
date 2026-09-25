@@ -9,7 +9,7 @@ class TaskRepository{
 
   Future<List<Task>> getTasks() async {
     try{
-      final remoteTasks = await _dbService.getAllTasks();
+      final remoteTasks = await _apiService.fetchTasks();
 
   await _dbService.clearAll();
   for(var task in remoteTasks){
@@ -17,12 +17,12 @@ class TaskRepository{
   }
       return remoteTasks;
     }catch(e){
-      print('API failed: $e'); 
+      print('API failed: using cache: $e'); 
       return _dbService.getAllTasks();
     }
   }
 
-  Future<Task> addTask({
+  Future<Task?> addTask({
     required String title,
     DateTime? dueDate,
     Priority priority = Priority.medium,
@@ -38,8 +38,18 @@ class TaskRepository{
         title: title,
       );
       await _dbService.insertTask(localTask);
-      return newTask;
+      return null;
     }
+  }
+
+  //update task
+  Future<void> updateTask(Task task) async {
+    try{
+      await _apiService.updateTask(task);
+    }catch(e){
+      print('API update failed1: $e');
+    }
+    await _dbService.updateTask(task);
   }
 
   Future<void> toggleTask(Task task) async{
@@ -49,12 +59,13 @@ class TaskRepository{
       dueDate: task.dueDate,
       // description: task.description,
       createdAt: task.createdAt,
-      isComplete: task.isComplete,
+      isCompleted: task.isCompleted,
+      priority: task.priority,
     );
     try{
       await _apiService.updateTask(updatedTask);
     }catch(e){
-      print('API update failed: $e');
+      print('API update failed2: $e');
     }
     await _dbService.updateTask(updatedTask);
   }
@@ -63,6 +74,7 @@ class TaskRepository{
     try{
       await _apiService.deleteTask(id);
     }catch(e){
+      print('Error: $e');
       await _dbService.deleteTask(id);
     }
   }

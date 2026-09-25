@@ -14,7 +14,8 @@ Future<List<Task>> fetchTasks() async{
     final List<dynamic> body = jsonDecode(response.body);
     return body.map((item) => Task.fromJson(item)).toList();
   }
-  throw Exception('Failed to load tasks');
+  
+  print(throw Exception('Failed to load tasks'));
 }
 
   // post /api/tasks
@@ -37,8 +38,10 @@ Future<List<Task>> fetchTasks() async{
     headers: {'Content-Type': 'application/json'},
     body: jsonEncode(task.toJson()),
     );
+    
     if(response.statusCode != 204){
-      throw Exception('Failed to update task on API');
+      print(response.body);
+      throw Exception('Failed to update task.');
     }
   } 
 
@@ -48,5 +51,6 @@ Future<List<Task>> fetchTasks() async{
     if(response.statusCode != 200){
       throw Exception('Failed to delete task on API');
     }
+    return;
   }
 }

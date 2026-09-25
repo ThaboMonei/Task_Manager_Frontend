@@ -31,14 +31,14 @@ class DataBaseService{
 
 Future<List<Task>> getAllTasks() async{
   final db = await database;
-  final List<Map<String, dynamic>> maps = await db.query(_tableName);
+  final  maps = await db.query(_tableName);
   return maps.map((map) => Task(
     id: map['id'] as int?,
     title: map['title'] as String,
     dueDate: map['dueDate'] != null ? DateTime.parse(map['dueDate'] as String) : null,
     // description: map['description'],
     createdAt: map['createdAt'] != null ? DateTime.parse(map['createdAt'] as String) : null,
-    isComplete: map['isComplete'] == 1,
+    isCompleted: map['isComplete'] == 1,
     priority: Priority.values[map['priority'] as int],
   )).toList();
 }
@@ -51,7 +51,7 @@ Future<void> insertTask(Task task) async{
     'title': task.title,
     'dueDate': task.dueDate?.toIso8601String(),
     // 'description': task.description,
-    'isComplete': task.isComplete ? 1 : 0,
+    'isComplete': task.isCompleted ? 1 : 0,
     'priority': task.priority.index,
     'createdAt': task.createdAt?.toIso8601String(),
   },
@@ -61,7 +61,15 @@ Future<void> insertTask(Task task) async{
 
 Future<void> updateTask(Task task) async{
   final db = await database;
-  await db.update(_tableName,{'title': task.title, 'isComplete': task.isComplete ? 1 : 0,'priority': task.priority.index},where: 'id = ?',whereArgs: [task.id],
+  await db.update(
+    _tableName,
+    {
+      'title': task.title, 
+      'isComplete': task.isCompleted ? 1 : 0,
+      'priority': task.priority.index
+      },
+      where: 'id = ?',
+      whereArgs: [task.id],
   );
 }
 
