@@ -9,7 +9,7 @@ class TaskRepository{
 
   Future<List<Task>> getTasks() async {
     try{
-      final remoteTasks = await _apiService.fetchTasks();
+      final remoteTasks = await _dbService.getAllTasks();
 
   await _dbService.clearAll();
   for(var task in remoteTasks){
@@ -17,7 +17,7 @@ class TaskRepository{
   }
       return remoteTasks;
     }catch(e){
-      print('API failed'); 
+      print('API failed: $e'); 
       return _dbService.getAllTasks();
     }
   }
