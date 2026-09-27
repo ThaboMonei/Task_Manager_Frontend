@@ -1,8 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'task_list/task_list_mobile_view.dart';
+import 'task_list/task_list_view_model.dart';
 
 void main(){
-  runApp(const MyApp());
+  runApp(
+    ChangeNotifierProvider(
+      create:(_) => TaskListViewModel()..load(),
+    child: MyApp()),
+  );
   }
 
   class MyApp extends StatelessWidget{

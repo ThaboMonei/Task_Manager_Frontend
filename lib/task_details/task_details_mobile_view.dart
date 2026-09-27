@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../models/task.dart';
 import '../repositories/task_repository.dart';
 import 'widgets/task_form.dart';
+import '../task_list/task_list_view_model.dart';
 
 
 class TaskDetailsMobileView extends StatefulWidget{
@@ -39,13 +41,15 @@ void initState(){
   Future<void> _submit() async{
     final title = _titleController.text.trim();
     if(title.isEmpty || _isSaving) return ;
-
     setState(() => _isSaving = true);
+
+    final vm = context.read<TaskListViewModel>();
+
     if(widget.task == null){
-    await _repository.addTask(
-      title: title,
-      dueDate: _dueDate,
-      priority: _priority,
+    await vm.addTask(
+       title,
+      _dueDate,
+      _priority,
     );
     }else{
       final updated = Task(
@@ -56,7 +60,7 @@ void initState(){
         priority: _priority,
         createdAt: widget.task!.createdAt,
       );
-      await _repository.updateTask(updated);
+      await vm.update(updated);
     }
 
     if(!mounted) return;

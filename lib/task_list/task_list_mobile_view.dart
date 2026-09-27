@@ -1,78 +1,31 @@
 import 'package:flutter/material.dart';
-import '../models/task.dart';
-import '../repositories/task_repository.dart';
+import 'package:provider/provider.dart';
 import 'widgets/empty_task_list.dart';
 import 'widgets/task_tile.dart';
 import '../task_details/task_details_mobile_view.dart';
+import 'task_list_view_model.dart';
 
-class TaskListMobileView extends StatefulWidget{
+
+
+class TaskListMobileView extends StatelessWidget{
   const TaskListMobileView({super.key});
 
-  @override
-  State<TaskListMobileView> createState() => _TaskListMobileViewState();
-}
-
-class _TaskListMobileViewState extends State<TaskListMobileView>{
- final TaskRepository _repository = TaskRepository();
- List<Task> _tasks =[];
- bool _isLoading = true;
-
- @override
- void initState(){
-  super.initState();
-  _loadTasks();
- }
-
- Future<void> _loadTasks() async{
-  setState(() => _isLoading = true);
-  try{
-  final tasks = await _repository.getTasks();
-  setState((){
-    _tasks = tasks;
-    _isLoading = false;
-  });
- }catch(e, stack){
-  print('LOAD ERROR: $e');
-  print(stack);
-  setState(() => _isLoading = false);
- }
- }
-
- Future<void> _openAddTask() async{
-  final added = await Navigator.push(
-    context, 
-    MaterialPageRoute(
-      builder: (_) => const TaskDetailsMobileView(),
-    ),
-  );
-  if(added == true) _loadTasks();
- }
-
- Future<void> _toggle(Task task) async{
-  await _repository.toggleTask(task);
-  _loadTasks();
- }
-
- Future<void> _delete(int id) async{
-  await _repository.deleteTask(id);
-  _loadTasks();
- }
-
- @override
+@override
  Widget build(BuildContext context){
+  final vm = context.watch<TaskListViewModel>();
   return Scaffold(
     appBar: AppBar(title: const Text('Tasks')),
-    body: _isLoading 
+    body: vm.isLoading 
       ? const Center(child: CircularProgressIndicator())
-      : _tasks.isEmpty
+      : vm.tasks.isEmpty
       ? const EmptyTaskList()
-      : ListView.builder(itemCount: _tasks.length,
+      : ListView.builder(itemCount: vm.tasks.length,
       itemBuilder: (context, i){
-        final task = _tasks[i];
+        final task = vm.tasks[i];
         return TaskTile(
           task: task,
-          onToggle: () => _toggle(task),
-          onDelete: () => _delete(task.id!),
+          onToggle: () => vm.toggle(task),
+          onDelete: () => vm.delete(task.id!),
           onTap: () async{
             final changed = await Navigator.push(
               context,
@@ -80,13 +33,21 @@ class _TaskListMobileViewState extends State<TaskListMobileView>{
                 builder:(_) => TaskDetailsMobileView(task: task),
               ),
             );
-             if(changed == true) _loadTasks();
+             if(changed == true) vm.load();
           },       
         );
       },
     ),
     floatingActionButton: FloatingActionButton(
-    onPressed: _openAddTask,
+    onPressed: () async{
+      final added = await Navigator.push(
+        context, 
+      MaterialPageRoute(
+        builder: (_) => const TaskDetailsMobileView(),
+      ),
+      );
+      if(added == true) vm.load();
+    },
     child: const Icon(Icons.add)),
   );
  }
