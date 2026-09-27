@@ -59,13 +59,15 @@ class TaskRepository{
       dueDate: task.dueDate,
       // description: task.description,
       createdAt: task.createdAt,
-      isCompleted: task.isCompleted,
+      isCompleted: !task.isCompleted,
       priority: task.priority,
     );
+    if(task.id != null && task.id! > 0){
     try{
       await _apiService.updateTask(updatedTask);
     }catch(e){
-      print('API update failed2: $e');
+      print('API toggle failed: $e');
+    }
     }
     await _dbService.updateTask(updatedTask);
   }

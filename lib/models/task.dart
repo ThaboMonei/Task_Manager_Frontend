@@ -36,7 +36,7 @@ class Task{
         print('fromJson FAILED for: $json');
         print('Error: $e');
         rethrow;
-      };
+      }
     }
 
     Map<String, dynamic> toJson(){
