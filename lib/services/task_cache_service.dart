@@ -19,6 +19,7 @@ class DataBaseService{
     CREATE TABLE $_tableName(
     id INTEGER PRIMARY KEY,
     title TEXT NOT NULL,
+    description TEXT,
     isComplete INTEGER NOT NULL,
     dueDate TEXT,
     priority INTEGER NOT NULL,
@@ -36,7 +37,7 @@ Future<List<Task>> getAllTasks() async{
     id: map['id'] as int?,
     title: map['title'] as String,
     dueDate: map['dueDate'] != null ? DateTime.parse(map['dueDate'] as String) : null,
-    // description: map['description'],
+    description: map['description'] as String?,
     createdAt: map['createdAt'] != null ? DateTime.parse(map['createdAt'] as String) : null,
     isCompleted: map['isComplete'] == 1,
     priority: Priority.values[map['priority'] as int],
@@ -50,7 +51,7 @@ Future<void> insertTask(Task task) async{
     'id': task.id,
     'title': task.title,
     'dueDate': task.dueDate?.toIso8601String(),
-    // 'description': task.description,
+    'description': task.description,
     'isComplete': task.isCompleted ? 1 : 0,
     'priority': task.priority.index,
     'createdAt': task.createdAt?.toIso8601String(),
@@ -66,7 +67,8 @@ Future<void> updateTask(Task task) async{
     {
       'title': task.title, 
       'isComplete': task.isCompleted ? 1 : 0,
-      'priority': task.priority.index
+      'priority': task.priority.index,
+      'description': task.description,
       },
       where: 'id = ?',
       whereArgs: [task.id],

@@ -3,7 +3,7 @@ enum Priority{low, medium, high}
 class Task{
   final int? id;
   final String title;
-  // final String? description;
+  final String? description;
   final bool isCompleted;
   final DateTime? dueDate;
   final DateTime? createdAt;
@@ -14,7 +14,7 @@ class Task{
       this.id,
       required this.title,
        this.dueDate,
-      // this.description,
+      this.description,
        this.createdAt,
       this.isCompleted = false,
       this.priority = Priority.medium,
@@ -26,7 +26,7 @@ class Task{
         id: json['id'],
         title: json['title'] as String? ?? '',
         dueDate: json['dueDate'] !=  null ? DateTime.tryParse(json['dueDate'] as String) : null,
-        // description: json['description'] as String? ?? 'null',
+        description: json['description'] as String?,
         createdAt: json['createdAt'] != null ? DateTime.tryParse(json['createdAt'] as String): null,
         isCompleted: json['isCompleted'] ?? false,
         priority: _parsePriority(json['priority'] as int?),
@@ -45,7 +45,7 @@ class Task{
         'id': id,
         'title': title,
         if(dueDate != null)'dueDate': dueDate!.toIso8601String(),
-        // 'description': description,
+        if(description != null)'description': description,
         if(createdAt != null)'createdAt': createdAt!.toIso8601String(),
         'isCompleted': isCompleted,
         'priority': priority.index,

@@ -18,37 +18,27 @@ class TaskRepository{
       return remoteTasks;
     }catch(e){
       print('API failed: using cache: $e'); 
-      return _dbService.getAllTasks();
+      return await _dbService.getAllTasks();
     }
   }
 
   Future<Task?> addTask({
     required String title,
+    String? description,
     DateTime? dueDate,
     Priority priority = Priority.medium,
     }) async {
-    final newTask = Task(title: title, dueDate: dueDate, priority: priority,);
-    try{
+    final newTask = Task(title: title,description: description, dueDate: dueDate, priority: priority,);
+    
       final createdTask = await _apiService.createTask(newTask);
+      await _dbService.insertTask(createdTask);
       return createdTask;
-    }catch(e){
-      print('API failed, saving locally: $e');
-      final localTask = Task(
-        id: DateTime.now().millisecondsSinceEpoch * -1,
-        title: title,
-      );
-      await _dbService.insertTask(localTask);
-      return null;
-    }
+  
   }
 
   //update task
   Future<void> updateTask(Task task) async {
-    try{
       await _apiService.updateTask(task);
-    }catch(e){
-      print('API update failed1: $e');
-    }
     await _dbService.updateTask(task);
   }
 
@@ -57,27 +47,19 @@ class TaskRepository{
       id: task.id,
       title: task.title,
       dueDate: task.dueDate,
-      // description: task.description,
+      description: task.description,
       createdAt: task.createdAt,
       isCompleted: !task.isCompleted,
       priority: task.priority,
     );
-    if(task.id != null && task.id! > 0){
-    try{
+    
       await _apiService.updateTask(updatedTask);
-    }catch(e){
-      print('API toggle failed: $e');
-    }
-    }
     await _dbService.updateTask(updatedTask);
   }
 
   Future<void> deleteTask(int id) async{
-    try{
       await _apiService.deleteTask(id);
-    }catch(e){
-      print('Error: $e');
       await _dbService.deleteTask(id);
-    }
+    
   }
 }

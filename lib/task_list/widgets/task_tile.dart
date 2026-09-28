@@ -15,21 +15,51 @@ const TaskTile({
   required this.onTap,
 });
 
+void _showDescription(BuildContext context){
+  showDialog(
+    context: context,
+    builder: (ctx) => AlertDialog(
+      title: Text(task.title),
+      content: SingleChildScrollView(
+        child: Text(task.description ?? ''),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(ctx),
+          child: const Text('Close'),
+        ),
+      ],
+    ),
+  );
+}
+
 @override
 Widget build(BuildContext context){
+  final hasDescription = task.description != null && task.description!.trim().isNotEmpty;
   return ListTile(
     onTap: onTap, 
     leading: Checkbox(
       value: task.isCompleted,
       onChanged: (_) => onToggle(),
     ),
-    title: Text(
-      task.title,
-      style: TextStyle(
-        decoration: task.isCompleted ? TextDecoration.lineThrough : null,
+    title: Row(
+      children: [
+        Expanded(
+          child:  Text(
+          task.title,
+          style: TextStyle(
+          decoration: task.isCompleted ? TextDecoration.lineThrough : null,
       ),
     ),
-    subtitle: task.dueDate != null ? Text('Due: ${task.dueDate!.toLocal().toString().split('')[0]}') 
+  ),
+  if(hasDescription)
+  TextButton(
+    child: const Text('view'),
+    onPressed: () => _showDescription(context),
+  ),
+      ],
+    ),
+    subtitle: task.dueDate != null ? Text('Due: ${task.dueDate!.toLocal().toString()}') 
     : null,
     trailing: IconButton(
       icon: const Icon(Icons.delete),

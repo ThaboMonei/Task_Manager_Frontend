@@ -19,6 +19,9 @@ void main(){
       return MaterialApp(
         title: 'Task App',
         theme: ThemeData(primarySwatch: Colors.blue),
+        scrollBehavior: const MaterialScrollBehavior().copyWith(
+          overscroll: false,
+        ),
         home: const TaskListMobileView(),
         );
     }

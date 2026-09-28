@@ -16,33 +16,59 @@ class TaskListViewModel extends ChangeNotifier{
     try{
     tasks = await _repository.getTasks();
     }catch(e){
-      error = e.toString();
+      error = 'Could not load tasks. Check your connection and try again';
     }
     isLoading = false;
     notifyListeners();
   }
 
-  Future<void> addTask(String title, DateTime? dueDate, Priority priority) async{
+  Future<void> addTask(String title, String? description,DateTime? dueDate, Priority priority) async{
+    try{
     await _repository.addTask(
       title: title,
+      description: description,
       dueDate: dueDate,
       priority: priority,
       );
       await load();
+    }catch(e){
+      error = 'Could not add task.Check your connection and try again';
+      notifyListeners();
+    }
   }
 
   Future<void> toggle(Task task) async{
+    try{
     await _repository.toggleTask(task); 
     await load();
+    }catch(e){
+      error = 'Could not check task';
+      notifyListeners();
+    }
      }
 
      Future<void> delete(int id) async{
+      try{
       await _repository.deleteTask(id);
       await load();
+      }catch(e){
+        error = 'Could not delete task';
+        notifyListeners();
+      }
      }
 
      Future<void> update(Task task) async{
+      try{
       await _repository.updateTask(task);
       await load();
+      }catch(e){
+        error = 'Could not update task';
+        notifyListeners();
+        }
+     }
+
+     void clearError(){
+      error = null;
+      notifyListeners();
      }
 }
