@@ -58,7 +58,9 @@ class TaskRepository{
   }
 
   Future<void> deleteTask(int id) async{
+    if(id > 0){
       await _apiService.deleteTask(id);
+    }
       await _dbService.deleteTask(id);
     
   }

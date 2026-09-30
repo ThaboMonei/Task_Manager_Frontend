@@ -48,7 +48,7 @@ Future<List<Task>> fetchTasks() async{
   //Delete
   Future<void> deleteTask(int id) async{
     final response = await http.delete(Uri.parse('$_baseUrl/tasks/$id'));
-    if(response.statusCode != 200){
+    if(response.statusCode != 200 && response.statusCode != 204){
       throw Exception('Failed to delete task on API');
     }
     return;

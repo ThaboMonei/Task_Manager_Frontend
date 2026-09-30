@@ -1,98 +1,10 @@
+
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'widgets/empty_task_list.dart';
-import 'widgets/task_tile.dart';
-import '../task_details/task_details_mobile_view.dart';
-import 'task_list_view_model.dart';
-import '/models/task.dart';
-
-
+import 'task_list_view.dart';
 
 class TaskListMobileView extends StatelessWidget{
   const TaskListMobileView({super.key});
 
-Future<void> _confirmDelete(BuildContext context, Task task) async{
-  final confirmed = await showDialog<bool>(context: context,
-  builder: (ctx) => AlertDialog(
-    title: const Text('Delete task'),
-    content: Text('Delete "${task.title}"?'),
-    actions: [
-      TextButton(
-        onPressed: () => Navigator.pop(ctx, false),
-        child: const Text('Cancel'),
-      ),
-      TextButton(
-        onPressed: () => Navigator.pop(ctx, true),
-        child: const Text('Delete'),
-      ),
-    ],
-  ),
-  );
-  if(confirmed == true){
-    await context.read<TaskListViewModel>().delete(task.id!);
-  }
-}
-
-@override
- Widget build(BuildContext context){
-  final vm = context.watch<TaskListViewModel>();
-  return Scaffold(
-    appBar: AppBar(title: const Text('Tasks')),
-    body: vm.isLoading 
-      ? const Center(child: CircularProgressIndicator())
-      :vm.error != null
-      ? Center(
-        child: Padding(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Icon(Icons.cloud_off, size: 48, color: Colors.grey),
-              const SizedBox(height: 12),
-              Text(vm.error!,
-              textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 16),
-              ElevatedButton(
-                onPressed: vm.load,
-                child: const Text('Retry'),
-              ),
-            ],
-          ),
-        ),
-      )
-      : vm.tasks.isEmpty
-      ? const EmptyTaskList()
-      : ListView.builder(itemCount: vm.tasks.length,
-      itemBuilder: (context, i){
-        final task = vm.tasks[i];
-        return TaskTile(
-          task: task,
-          onToggle: () => vm.toggle(task),
-          onDelete: () => _confirmDelete(context,task),
-          onTap: () async{
-            final changed = await Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder:(_) => TaskDetailsMobileView(task: task),
-              ),
-            );
-             if(changed == true) vm.load();
-          },       
-        );
-      },
-    ),
-    floatingActionButton: FloatingActionButton(
-    onPressed: () async{
-      final added = await Navigator.push(
-        context, 
-      MaterialPageRoute(
-        builder: (_) => const TaskDetailsMobileView(),
-      ),
-      );
-      if(added == true) vm.load();
-    },
-    child: const Icon(Icons.add)),
-  );
- }
+  @override
+  Widget build(BuildContext context) => const TaskListView();
 }

@@ -77,7 +77,11 @@ Future<void> updateTask(Task task) async{
 
 Future<void> deleteTask(int id) async{
   final db = await database;
+  try{
   await db.delete(_tableName, where: 'id = ?', whereArgs: [id]);
+  }catch(e){
+    print('Database error: $e');
+  };
 }
 
 Future<void> clearAll() async{
