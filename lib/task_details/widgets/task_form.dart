@@ -80,7 +80,7 @@ class TaskForm extends StatelessWidget{
           const SizedBox(height: 24),
           ElevatedButton(
             onPressed: onSubmit,
-            child: const Text('Create Task'),
+            child: const Text('Save Task'),
           ),
         ],
       ),

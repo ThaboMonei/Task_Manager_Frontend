@@ -11,14 +11,15 @@ class TaskDetailsView extends StatelessWidget {
   @override
   Widget build(BuildContext context){
     return ChangeNotifierProvider(
-      create:(_) => TaskDetailsViewModel(),
-      child: const _TaskDetailsBody(),
+      create:(_) => TaskDetailsViewModel()..init(task),
+      child:  _TaskDetailsBody(task: task),
     );
   }
 }
 
 class _TaskDetailsBody extends StatefulWidget{
-  const _TaskDetailsBody();
+  final Task? task;
+  const _TaskDetailsBody({this.task});
 
   @override
   State<_TaskDetailsBody> createState() => _TaskDetailsBodyState();
@@ -34,9 +35,12 @@ class _TaskDetailsBodyState extends State<_TaskDetailsBody>{
   void didChangeDependencies(){
     super.didChangeDependencies();
     if(_initialized) return;
-    final vm = context.read<TaskDetailsViewModel>();
-    _titleController.text = vm.title;
-    _descriptionController.text = vm.description ?? '';
+
+    final t = widget.task;
+    if(t != null){
+    _titleController.text = t.title;
+    _descriptionController.text = t.description ?? '';
+    }
     _initialized = true;
   }
 
@@ -48,11 +52,9 @@ class _TaskDetailsBodyState extends State<_TaskDetailsBody>{
   }
 
   Future<void> _submit() async{
-    try{
     if(!_formKey.currentState!.validate()) return;
-    }catch(e){
-      print('The error on submit: $e');
-    }
+    if(!mounted) return;
+    
     final vm = context.read<TaskDetailsViewModel>();
     vm.setTitle(_titleController.text.trim());
     vm.setDescription(_descriptionController.text.trim());
@@ -60,7 +62,16 @@ class _TaskDetailsBodyState extends State<_TaskDetailsBody>{
     final ok = await vm.save();
     if(!mounted) return;
 
-    if(ok) Navigator.pop(context, true);
+    if(ok){ 
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(vm.isEditing ? 'Task updated' : 'Task added')),
+         );
+      Navigator.pop(context, true);
+    }else{
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(vm.error ?? 'Failed')),
+         );
+    }
    }
 
    @override
