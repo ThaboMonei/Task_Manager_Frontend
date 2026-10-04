@@ -11,9 +11,7 @@ class TaskDetailsViewModel extends ChangeNotifier {
   Priority priority = Priority.medium;
   bool isSaving = false;
   String? error;
-
   Task? _editing;
-
   bool get isEditing => _editing != null;
 
   void init(Task? task){
@@ -24,6 +22,7 @@ class TaskDetailsViewModel extends ChangeNotifier {
       dueDate = task.dueDate;
       priority = task.priority;
     }
+    
     notifyListeners();
   }
 

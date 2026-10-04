@@ -2,66 +2,108 @@ import '../models/task.dart';
 import '../services/task_api_service.dart';
 import '../services/task_cache_service.dart';
 
-
-class TaskRepository{
+class TaskRepository {
   final ApiService _apiService = ApiService();
   final DataBaseService _dbService = DataBaseService();
 
-  Future<List<Task>> getTasks() async {
-    try{
-      final remoteTasks = await _apiService.fetchTasks();
-
-  await _dbService.clearAll();
-  for(var task in remoteTasks){
-    await _dbService.insertTask(task);
-  }
-      return remoteTasks;
-    }catch(e){
-      print('API failed: using cache: $e'); 
-      return await _dbService.getAllTasks();
+Future<List<Task>> getTasks() async {
+  try {
+    await syncOfflineTasks(); 
+    final remoteTasks = await _apiService.fetchTasks();
+    for (var task in remoteTasks) {
+      await _dbService.insertTask(task);
     }
+  
+    return await _dbService.getAllTasks();
+  } catch (e) {
+    print('API failed: using cache: $e'); 
+    return await _dbService.getAllTasks();
   }
+}
+
+
 
   Future<Task?> addTask({
+    //Parameter values to create the task
     required String title,
     String? description,
     DateTime? dueDate,
     Priority priority = Priority.medium,
-    }) async {
-    final newTask = Task(title: title,description: description, dueDate: dueDate, priority: priority,);
-    
-      final createdTask = await _apiService.createTask(newTask);
-      await _dbService.insertTask(createdTask);
-      return createdTask;
-  
-  }
-
-  //update task
-  Future<void> updateTask(Task task) async {
-      await _apiService.updateTask(task);
-    await _dbService.updateTask(task);
-  }
-
-  Future<void> toggleTask(Task task) async{
-    final updatedTask = Task(
-      id: task.id,
-      title: task.title,
-      dueDate: task.dueDate,
-      description: task.description,
-      createdAt: task.createdAt,
-      isCompleted: !task.isCompleted,
-      priority: task.priority,
+  }) async {
+    //Task to be created using parameter values
+    final newTask = Task(
+      title: title,
+      description: description,
+      dueDate: dueDate,
+      priority: priority,
+      createdAt: DateTime.now(),
+      isSynced: false, 
     );
-    
-      await _apiService.updateTask(updatedTask);
-    await _dbService.updateTask(updatedTask);
+
+    try {
+      final createdTask = await _apiService.createTask(newTask);
+      await _dbService.insertTask(createdTask); // Saves with server ID and isSynced = true
+      return createdTask;
+    } catch (e) {
+      print('API down during add. Saving locally as unsynced.');
+      //Saving locally without backend
+      await _dbService.insertTask(newTask);
+      return newTask;
+    }
   }
 
-  Future<void> deleteTask(int id) async{
-    if(id > 0){
-      await _apiService.deleteTask(id);
+  Future<void> updateTask(Task task) async {
+    try {
+      await _apiService.updateTask(task);
+      await _dbService.updateTask(task.copyWith(isSynced: true));
+    } catch (e) {
+      print('API down during update. Saving modification locally.');
+      await _dbService.updateTask(task.copyWith(isSynced: false));
     }
-      await _dbService.deleteTask(id);
-    
   }
+
+  Future<void> toggleTask(Task task) async {
+    final updatedTask = task.copyWith(isCompleted: !task.isCompleted);
+    await updateTask(updatedTask); 
+  }
+
+  Future<void> deleteTask(int id) async {
+    try {
+      if (id > 0) {
+        await _apiService.deleteTask(id);
+      }
+    } catch (e) {
+      print('Could not delete from server. Item removed locally.');
+    }
+    await _dbService.deleteTask(id);
+  }
+
+
+  Future<void> syncOfflineTasks() async {
+  try {
+    List<Task> unsynced = await _dbService.getUnsyncedTasks();
+    if (unsynced.isEmpty) return;
+
+    print('Found ${unsynced.length} pending items to sync...');
+
+    for (var task in unsynced) {
+            if (task.id != null && !task.isSynced) {
+        final cleanOfflineTask = Task(
+          title: task.title,
+          description: task.description,
+          dueDate: task.dueDate,
+          priority: task.priority,
+          createdAt: task.createdAt,
+          isCompleted: task.isCompleted,
+        );
+
+        final serverTask = await _apiService.createTask(cleanOfflineTask);
+        
+        await _dbService.updateOfflineTaskId(task.id!, serverTask);
+      }
+    }
+  } catch (e) {
+    print('Sync cycle skipped. Backend is still down: $e');
+  }
+}
 }

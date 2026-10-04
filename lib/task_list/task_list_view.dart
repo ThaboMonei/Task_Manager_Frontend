@@ -59,8 +59,11 @@ Future<void> _confirmDelete(BuildContext context, Task task) async{
               ),
             );
              if(changed == true) vm.load();
-          },       
+          },   
+              
+
         );
+       
       },
     ),
     floatingActionButton: FloatingActionButton(

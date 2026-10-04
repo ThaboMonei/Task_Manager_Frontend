@@ -6,6 +6,7 @@ import '../models/task.dart';
 
 class ApiService {
 final String _baseUrl = ApiConfig.baseUrl;
+bool apiAdded = false;
 
 //get /api/tasks
 Future<List<Task>> fetchTasks() async{
@@ -26,10 +27,12 @@ Future<List<Task>> fetchTasks() async{
     body: jsonEncode(task.toJson()));
     
     if (response.statusCode == 201) {
+      print('THIS IS THE RESPONSE BODY: ${response.body}');
       return Task.fromJson(jsonDecode(response.body));
     } else {
       throw Exception('Failed to load tasks');
     }
+    
   }
 
   //Update

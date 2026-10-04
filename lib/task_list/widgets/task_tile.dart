@@ -38,6 +38,7 @@ Widget build(BuildContext context){
   final hasDescription = task.description != null && task.description!.trim().isNotEmpty;
   return ListTile(
     onTap: onTap, 
+    tileColor: Colors.grey[200],
     leading: Checkbox(
       value: task.isCompleted,
       onChanged: (_) => onToggle(),
@@ -59,7 +60,7 @@ Widget build(BuildContext context){
   ),
       ],
     ),
-    subtitle: task.dueDate != null ? Text('Due: ${task.dueDate!.toLocal().toString()}') 
+    subtitle: task.dueDate != null ? Text('Due: ${task.dueDate!.toString().split(' ')[0]}') 
     : null,
     trailing: IconButton(
       icon: const Icon(Icons.delete),
