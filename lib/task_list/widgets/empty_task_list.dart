@@ -10,7 +10,7 @@ class EmptyTaskList extends StatelessWidget{
         mainAxisAlignment: MainAxisAlignment.center,
         children: const[
           Icon(Icons.inbox, size: 64, color: Colors.grey),
-          SizedBox(height: 12),
+          SizedBox(height: 15),
           Text('No tasks yet',
           style: TextStyle(fontSize:18,color: Colors.grey)),
         ]

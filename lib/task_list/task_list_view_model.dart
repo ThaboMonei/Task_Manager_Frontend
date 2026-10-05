@@ -22,6 +22,10 @@ class TaskListViewModel extends ChangeNotifier{
     notifyListeners();
   }
 
+  Future<void> searchTask() async{
+    
+  }
+
   Future<void> addTask(String title, String? description,DateTime? dueDate, Priority priority) async{
     try{
     await _repository.addTask(

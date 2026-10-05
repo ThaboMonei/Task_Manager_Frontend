@@ -38,8 +38,59 @@ Future<void> _confirmDelete(BuildContext context, Task task) async{
  Widget build(BuildContext context){
   final vm = context.watch<TaskListViewModel>();
   return Scaffold(
-    appBar: AppBar(title: const Text('Tasks')),
-    body: vm.isLoading 
+    appBar: AppBar( 
+      title:const Text('Tasks'),
+      actions:[
+       IconButton(
+      
+         icon: const Icon(Icons.add),
+    onPressed: () async{
+      final added = await Navigator.push(
+        context, 
+      MaterialPageRoute(
+        builder: (_) => const TaskDetailsView(),
+      ),
+      );
+      if(added == true) vm.load();
+    },
+   
+    ),
+      ]
+      ),
+    body:Column( 
+      children: [
+        Padding(
+          padding: const .all(8.0),
+          child: SearchAnchor(
+            builder: (BuildContext context, SearchController controller){
+              return SearchBar(
+                controller: controller,
+                padding: const WidgetStatePropertyAll<EdgeInsets>(EdgeInsets.symmetric(horizontal: 16.0),
+                ),
+                onTap: (){
+                  controller.openView();
+                },
+                onChanged: (_){
+                  controller.openView();
+                },
+                leading: const Icon(Icons.search),
+              );
+            },
+            suggestionsBuilder: (BuildContext context, SearchController controller){
+              return List<ListTile>.generate(vm.tasks.length, (int index){
+                final title = '$vm.tasks.title';
+                return ListTile(
+                  title: Text(item),
+                  onTap: (){},
+                );
+              });
+            },
+            ),
+            
+        ),
+
+       Expanded(
+        child: vm.isLoading 
       ? const Center(child: CircularProgressIndicator())
       : vm.tasks.isEmpty
       ? const EmptyTaskList()
@@ -65,19 +116,15 @@ Future<void> _confirmDelete(BuildContext context, Task task) async{
         );
        
       },
-    ),
-    floatingActionButton: FloatingActionButton(
-    onPressed: () async{
-      final added = await Navigator.push(
-        context, 
-      MaterialPageRoute(
-        builder: (_) => const TaskDetailsView(),
       ),
-      );
-      if(added == true) vm.load();
-    },
-    child: const Icon(Icons.add)),
-  );
+       ),
+      
+      ],
+    ),
+     
+      
+    );
+
  }
 }
 

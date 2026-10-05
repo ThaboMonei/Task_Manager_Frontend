@@ -36,7 +36,9 @@ void _showDescription(BuildContext context){
 @override
 Widget build(BuildContext context){
   final hasDescription = task.description != null && task.description!.trim().isNotEmpty;
-  return ListTile(
+  return Column(
+  children: [
+    ListTile(
     onTap: onTap, 
     tileColor: Colors.grey[200],
     leading: Checkbox(
@@ -53,6 +55,16 @@ Widget build(BuildContext context){
       ),
     ),
   ),
+
+  Chip(
+    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+    label:Text(task.priority.name.toUpperCase()),
+    backgroundColor: task.priority.name == 'low' 
+    ? Colors.yellow :  task.priority.name == 'medium'  
+    ? Colors.orange :  task.priority.name == 'high'
+    ? Colors.red : Colors.orange,
+    ),
+
   if(hasDescription)
   TextButton(
     child: const Text('view'),
@@ -65,7 +77,12 @@ Widget build(BuildContext context){
     trailing: IconButton(
       icon: const Icon(Icons.delete),
       onPressed: onDelete,
+      
       )
-    );
+      
+    ),
+     SizedBox(height: 16),
+  ],
+  ); 
 }
 }
