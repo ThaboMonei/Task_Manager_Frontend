@@ -68,7 +68,7 @@ Future<void> _confirmDelete(BuildContext context, Task task) async{
                 padding: const WidgetStatePropertyAll<EdgeInsets>(EdgeInsets.symmetric(horizontal: 16.0),
                 ),
                 onTap: (){
-                  controller.openView();
+                  
                 },
                 onChanged: (_){
                   controller.openView();
@@ -76,14 +76,22 @@ Future<void> _confirmDelete(BuildContext context, Task task) async{
                 leading: const Icon(Icons.search),
               );
             },
-            suggestionsBuilder: (BuildContext context, SearchController controller){
-              return List<ListTile>.generate(vm.tasks.length, (int index){
-                final title = '$vm.tasks.title';
-                return ListTile(
-                  title: Text(item),
+            suggestionsBuilder: (context, SearchController controller){
+              final query = controller.text;
+
+                if(query.isEmpty){
+                  return [const Center(child: Text('Type a title to search'))];
+                }
+
+                vm.searchTask(query);
+
+                return [ 
+                  ListTile(
+                  title: Text('${vm.taskSearch?.title}'),
+                  subtitle: Text('${vm.taskSearch?.description!}'),
                   onTap: (){},
-                );
-              });
+                ),
+                ];
             },
             ),
             

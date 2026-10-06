@@ -8,6 +8,7 @@ class TaskListViewModel extends ChangeNotifier{
   List<Task> tasks = [];
   bool isLoading = false;
   String? error;
+  Task? taskSearch;
 
   Future<void> load() async{
     isLoading = true;
@@ -22,7 +23,17 @@ class TaskListViewModel extends ChangeNotifier{
     notifyListeners();
   }
 
-  Future<void> searchTask() async{
+  Future<void> searchTask(String title) async{
+    tasks = await _repository.getTasks();
+    if(title.isNotEmpty){
+      for(var task in tasks){
+        if(title == task.title){
+          taskSearch = task;
+        }
+      }
+      notifyListeners;
+    }
+    throw Exception('Task does not exist');
     
   }
 
