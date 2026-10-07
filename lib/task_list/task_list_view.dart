@@ -82,13 +82,14 @@ Future<void> _confirmDelete(BuildContext context, Task task) async{
                 if(query.isEmpty){
                   return [const Center(child: Text('Type a title to search'))];
                 }
-
+                print(query);
                 vm.searchTask(query);
 
                 return [ 
                   ListTile(
+                  tileColor: Colors.grey[150],
                   title: Text('${vm.taskSearch?.title}'),
-                  subtitle: Text('${vm.taskSearch?.description!}'),
+                  subtitle: Text(vm.taskSearch?.description ?? ''),
                   onTap: (){},
                 ),
                 ];
@@ -129,8 +130,6 @@ Future<void> _confirmDelete(BuildContext context, Task task) async{
       
       ],
     ),
-     
-      
     );
 
  }

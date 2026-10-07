@@ -55,7 +55,8 @@ Widget build(BuildContext context){
       ),
     ),
   ),
-
+  Column(
+    children:[
   Chip(
     materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
     label:Text(task.priority.name.toUpperCase()),
@@ -67,10 +68,17 @@ Widget build(BuildContext context){
 
   if(hasDescription)
   TextButton(
-    child: const Text('view'),
+    
     onPressed: () => _showDescription(context),
+    style: TextButton.styleFrom(
+      fixedSize: const Size(1,1),
+    ),
+    child: const Text('view'),
   ),
       ],
+    ),
+    
+      ]
     ),
     subtitle: task.dueDate != null ? Text('Due: ${task.dueDate!.toString().split(' ')[0]}') 
     : null,
@@ -78,10 +86,10 @@ Widget build(BuildContext context){
       icon: const Icon(Icons.delete),
       onPressed: onDelete,
       
-      )
-      
-    ),
-     SizedBox(height: 16),
+      ),
+  ),
+
+     SizedBox(height: 12),
   ],
   ); 
 }

@@ -25,15 +25,19 @@ class TaskListViewModel extends ChangeNotifier{
 
   Future<void> searchTask(String title) async{
     tasks = await _repository.getTasks();
+    // print('THIS IS A LIST LENGTH!!!!!!!!!!!');
+    // print(tasks.length);
     if(title.isNotEmpty){
       for(var task in tasks){
-        if(title == task.title){
+
+        if(task.title.contains(title)){
           taskSearch = task;
         }
+        ///throw Exception('Task does not exist');
       }
       notifyListeners;
     }
-    throw Exception('Task does not exist');
+    
     
   }
 
