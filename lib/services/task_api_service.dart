@@ -6,7 +6,18 @@ import '../models/task.dart';
 
 class ApiService {
 final String _baseUrl = ApiConfig.baseUrl;
-bool apiAdded = false;
+
+
+//checking backend connection
+Future<bool> checkingBackendConnection() async{
+  try{
+    final response = await http.get(Uri.parse('$_baseUrl/tasks')).timeout(const Duration(seconds: 5) );
+
+    return response.statusCode == 200;
+  }catch(e){
+    return false;
+  }
+}
 
 //get /api/tasks
 Future<List<Task>> fetchTasks() async{

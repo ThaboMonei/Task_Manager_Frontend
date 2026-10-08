@@ -24,12 +24,13 @@ class Task {
   factory Task.fromJson(Map<String, dynamic> json) {
     try {
       return Task(
-        id: json['id'],
+        id: json['id'] as int?,
         title: json['title'] as String? ?? '',
         dueDate: json['dueDate'] != null ? DateTime.tryParse(json['dueDate'] as String) : null,
         description: json['description'] as String?,
         createdAt: json['createdAt'] != null ? DateTime.tryParse(json['createdAt'] as String) : null,
-        isCompleted: json['isCompleted'] ?? false,
+        // Using common variations in C# JSON keys (isCompleted vs isComplete)
+        isCompleted: json['isCompleted'] ?? json['isComplete'] ?? false,
         priority: _parsePriority(json['priority'] as int?),
         isSynced: true, 
       );
@@ -39,7 +40,8 @@ class Task {
       rethrow;
     }
   }
-
+  
+  // Standard conversion for SQLite local storage
   Map<String, dynamic> toJson() {
     return {
       if (id != null) 'id': id,
@@ -52,15 +54,27 @@ class Task {
     };
   }
 
-  
-  Task copyWith({int? id, bool? isSynced, bool? isCompleted}) {
+  // CRITICAL FOR C#: Use this specifically when sending data via HTTP POST/PUT to .NET API
+  Map<String, dynamic> toApiJson({bool includeId = false}) {
+    return {
+      if (includeId && id != null) 'id': id,
+      'title': title,
+      'dueDate': dueDate?.toIso8601String(),
+      'description': description,
+      'createdAt': createdAt?.toIso8601String(),
+      'isCompleted': isCompleted,
+      'priority': priority.index,
+    };
+  }
+
+  Task copyWith({int? id, bool? isSynced, bool? isCompleted, String? title, String? description, DateTime? dueDate, Priority? priority}) {
     return Task(
       id: id ?? this.id,
-      title: title,
-      description: description,
-      dueDate: dueDate,
+      title: title ?? this.title,
+      description: description ?? this.description,
+      dueDate: dueDate ?? this.dueDate,
       createdAt: createdAt,
-      priority: priority,
+      priority: priority ?? this.priority,
       isCompleted: isCompleted ?? this.isCompleted,
       isSynced: isSynced ?? this.isSynced,
     );
